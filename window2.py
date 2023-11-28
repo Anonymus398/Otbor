@@ -14,12 +14,12 @@ def new_usr(pasword):
 
 def get_log(password):
     salt = "518129"
-    Hash = "dfdeafa353e14e8887d2a34d539ef79b03db7aa82fac204999eb227ad2ffc04eed4ae7286c0f16005ad9531307c681083db89f18d067fe7fb1688566f52662a7"
-    pas = str(password) + salt 
+    Hash = "0b602f0fb5988dd2fd08e2aedef82760e1d5f3438c95fc5edfb4da752c81ac9fecd70a1f399ffbf5e172351c1745fcbc76233930f73fe17f5a7c89b55fb4ea58"
+    pas = str(password.value) + salt 
     pas_bytes = pas.encode('utf-8')
     hesh = hashlib.sha512(pas_bytes)
     if hesh.hexdigest() == Hash:
-         return True
+        return True
 
 
 def main(page: ft.Page):
@@ -39,7 +39,11 @@ def main(page: ft.Page):
             password.value = ""
             page.update()
             password.focus()
-        page.add(login_txt, password, ft.ElevatedButton("Войти", on_click=btn_click), greetings,)
+        page.add(login_txt, 
+                 password, 
+                 ft.ElevatedButton("Войти", on_click=btn_click), 
+                 greetings,
+                 )
         
 if __name__ == "__main__":
     ft.app(target=main)

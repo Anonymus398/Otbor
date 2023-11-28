@@ -1,6 +1,5 @@
 import flet as ft
 import sqlite3
-import window2
 
 conn = sqlite3.connect('notes.db')
 cursor = conn.cursor()

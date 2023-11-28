@@ -44,8 +44,6 @@ def main(page: ft.Page):
             print(pas)
             
 
-
-
         def btn_click(e):
             if str(login_txt.value) == User and get_log(password) == True:
                 page.window_destroy()

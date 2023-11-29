@@ -4,13 +4,13 @@ import hashlib
 
 #Create new user
 def new_usr(pasword):
-    salt = "51812910"
+    salt = "518129"
     pas = str(pasword) + salt 
     pas_bytes = pas.encode('utf-8')
     hesh = hashlib.sha512(pas_bytes)
     return hesh.hexdigest()
 
-
+#Authoriz user
 def get_log(password):
     salt = "518129"
     Hash = "0b602f0fb5988dd2fd08e2aedef82760e1d5f3438c95fc5edfb4da752c81ac9fecd70a1f399ffbf5e172351c1745fcbc76233930f73fe17f5a7c89b55fb4ea58"
@@ -23,7 +23,7 @@ def get_log(password):
 
 def main(page: ft.Page):
         login_txt = ft.TextField(label="Логин", width= 400, autofocus=True)
-        password = ft.TextField(label="Пароль", width= 400)
+        password = ft.TextField(label="Пароль", width= 400, password=True)
         greetings = ft.Column()
         User = "Admin"
         page.window_width = 400  
@@ -48,6 +48,7 @@ def main(page: ft.Page):
             if str(login_txt.value) == User and get_log(password) == True:
                 page.window_destroy()
                 subprocess.run(["python", "main.py"])
+                page.remove(page)
             login_txt.value = ""
             password.value = ""
             page.update()

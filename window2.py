@@ -1,14 +1,24 @@
 import flet as ft
+from random import randint
 import subprocess
 import hashlib
+import pyAesCrypt
+import os
+import sqlite3
 
-#Create new user
+
+#Decryption file
+def decrypt(password):
+    pyAesCrypt.decryptFile("notes.db.aes", "notes.db", password.value)
+    os.remove("notes.db.aes")
+
+#Create new user, random salt
 def new_usr(pasword):
-    salt = "518129"
+    salt = str(randint(100000, 999999))
     pas = str(pasword) + salt 
     pas_bytes = pas.encode('utf-8')
     hesh = hashlib.sha512(pas_bytes)
-    return hesh.hexdigest()
+    return hesh.hexdigest(), salt
 
 #Authoriz user
 def get_log(password):
@@ -18,6 +28,7 @@ def get_log(password):
     pas_bytes = pas.encode('utf-8')
     hesh = hashlib.sha512(pas_bytes)
     if hesh.hexdigest() == Hash:
+        decrypt(password)
         return True
 
 
@@ -34,15 +45,17 @@ def main(page: ft.Page):
         #Registration button
         def reg_button(e):
             log = login_txt.value
-            pas = new_usr(password.value)
+            hashe, salt = new_usr(password.value)
             page.remove(button3)
             page.add(button1, button2)
             login_txt.value = ""
             password.value = ""
             page.update()
             password.focus()
-            print(log)
-            print(pas)
+            with sqlite3.connect('us.db') as conn:
+                curs = conn.cursor()
+                curs.execute('INSERT INTO users (user, hesh, salt) VALUES (?, ?, ?)', (str(log), str(hashe), str(salt)))
+                conn.commit()
             
         #Authorize button
         def btn_click(e):

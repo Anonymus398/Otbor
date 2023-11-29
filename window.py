@@ -1,5 +1,8 @@
 import flet as ft
 import sqlite3
+import sys
+import os
+import pyAesCrypt
 
 conn = sqlite3.connect('notes.db')
 cursor = conn.cursor()

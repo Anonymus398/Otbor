@@ -1,13 +1,15 @@
 import flet as ft
 from window import TodoApp, conn
+from window2 import pac, lo
 import pyAesCrypt
 import os
 import sys
-password = "123456"
-def encrypt(password):
-    pyAesCrypt.encryptFile("notes.db", "notes.db.aes", password)
+
+
+def encrypt(pac, lo):
+    pyAesCrypt.encryptFile(str(lo) + ".db", str(lo) + ".db.aes", pac)
     conn.close()
-    os.remove("notes.db")
+    os.remove(str(lo) + ".db")
 
 
 async def main(page: ft.Page): 
@@ -18,4 +20,4 @@ async def main(page: ft.Page):
 
 if __name__ == "__main__":
     ft.app(target=main)
-sys.exit(encrypt(password))
+sys.exit(encrypt(pac, lo))

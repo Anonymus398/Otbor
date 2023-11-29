@@ -5,12 +5,14 @@ import hashlib
 import pyAesCrypt
 import os
 import sqlite3
-
+pac = ""
+lo = ""
 
 #Decryption file
-def decrypt(password):
-    pyAesCrypt.decryptFile("notes.db.aes", "notes.db", password.value)
-    os.remove("notes.db.aes")
+def decrypt(lo, pa):
+    pac = pa.value
+    pyAesCrypt.decryptFile(str(lo) + ".db.aes", str(lo) + ".db", pa.value)
+    os.remove(str(lo) + ".db.aes")
 
 #Create new user, random salt
 def new_usr(pasword):
@@ -21,14 +23,22 @@ def new_usr(pasword):
     return hesh.hexdigest(), salt
 
 #Authoriz user
-def get_log(password):
-    salt = "518129"
-    Hash = "0b602f0fb5988dd2fd08e2aedef82760e1d5f3438c95fc5edfb4da752c81ac9fecd70a1f399ffbf5e172351c1745fcbc76233930f73fe17f5a7c89b55fb4ea58"
+def get_log(password, login):
+    salt = ""
+    Hash = ""
+    with sqlite3.connect('us.db') as conn:
+        curs = conn.cursor()
+        curs.execute('SELECT * FROM users')
+        notes = curs.fetchall()
+        for note in notes:
+            if note[1] == login:
+                salt = note[2]
+                Hash = note[3]
     pas = str(password.value) + salt 
     pas_bytes = pas.encode('utf-8')
     hesh = hashlib.sha512(pas_bytes)
     if hesh.hexdigest() == Hash:
-        decrypt(password)
+        decrypt(login, password)
         return True
 
 
@@ -36,7 +46,6 @@ def main(page: ft.Page):
         login_txt = ft.TextField(label="Логин", width= 400, autofocus=True)
         password = ft.TextField(label="Пароль", width= 400, password=True)
         greetings = ft.Column()
-        User = "Admin"
         page.window_width = 400  
         page.window_height = 400  
         page.window_resizable = False  
@@ -46,20 +55,57 @@ def main(page: ft.Page):
         def reg_button(e):
             log = login_txt.value
             hashe, salt = new_usr(password.value)
-            page.remove(button3)
-            page.add(button1, button2)
-            login_txt.value = ""
-            password.value = ""
-            page.update()
-            password.focus()
+            p = password.value
             with sqlite3.connect('us.db') as conn:
                 curs = conn.cursor()
-                curs.execute('INSERT INTO users (user, hesh, salt) VALUES (?, ?, ?)', (str(log), str(hashe), str(salt)))
-                conn.commit()
+                curs.execute('''
+                    CREATE TABLE IF NOT EXISTS users (
+                        id INTEGER PRIMARY KEY,
+                        user TEXT,
+                        salt TEXT,
+                        hesh TEXT
+                    )
+                ''')
+                
+                curs.execute('SELECT * FROM users')
+                notes = curs.fetchall()
+                if notes != []:
+                        for note in notes:
+                            if note[1] == log:
+                                print("Юзер есть, ты еблан?")
+                            
+                        curs.execute('INSERT INTO users (user, hesh, salt) VALUES (?, ?, ?)', (str(log), str(hashe), str(salt)))
+                        conn.commit()
+                        page.remove(button3)
+                        page.add(button1, button2)
+                        login_txt.value = ""
+                        password.value = ""
+                                
+                else:
+                    curs.execute('INSERT INTO users (user, hesh, salt) VALUES (?, ?, ?)', (str(log), str(hashe), str(salt)))
+                    conn.commit()
+                    page.remove(button3)
+                    page.add(button1, button2)
+                    login_txt.value = ""
+                    password.value = ""    
+            
+            with sqlite3.connect(str(log) + '.db') as conn:
+                curs = conn.cursor()
+                curs.execute('''
+                    CREATE TABLE IF NOT EXISTS notes (
+                        id INTEGER PRIMARY KEY,
+                        title TEXT,
+                        content TEXT
+                    )
+                ''')
+                pyAesCrypt.encryptFile(str(log) + ".db", str(log) + ".db.aes", p)
+            conn.close()
+            os.remove(str(log) + ".db")
+            page.update()
             
         #Authorize button
         def btn_click(e):
-            if str(login_txt.value) == User and get_log(password) == True:
+            if get_log(password, login_txt.value) == True:
                 page.window_destroy()
                 subprocess.run(["python", "main.py"])
                 page.remove(page)
@@ -82,7 +128,6 @@ def main(page: ft.Page):
                  button1,
                  button2, 
                  greetings,
-                 
                  )
         
         

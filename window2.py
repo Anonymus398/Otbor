@@ -30,7 +30,8 @@ def main(page: ft.Page):
         page.window_height = 400  
         page.window_resizable = False  
         page.update()
-        
+
+        #Registration button
         def reg_button(e):
             log = login_txt.value
             pas = new_usr(password.value)
@@ -43,7 +44,7 @@ def main(page: ft.Page):
             print(log)
             print(pas)
             
-
+        #Authorize button
         def btn_click(e):
             if str(login_txt.value) == User and get_log(password) == True:
                 page.window_destroy()
@@ -53,11 +54,12 @@ def main(page: ft.Page):
             password.value = ""
             page.update()
             password.focus()
-
+        
+        #Reg text button
         def on_text_button_click(e):
             page.remove(button1, button2)
             page.add(button3)
-            #page.remove_all() 
+            
 
         button1 = ft.ElevatedButton("Войти", on_click=btn_click)
         button2 = ft.TextButton("Регистрация", on_click=on_text_button_click)

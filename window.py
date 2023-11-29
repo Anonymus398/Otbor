@@ -24,7 +24,7 @@ class Task(ft.UserControl):
 
     def build(self):
         self.display_task = ft.Checkbox(
-            value=False, label=self.task_name + self.task_text, on_change=self.status_changed
+            value=False, label=self.task_name + " " + self.task_text, on_change=self.status_changed
         )
         self.edit_name = ft.TextField(expand=1)
 

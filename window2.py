@@ -5,12 +5,11 @@ import hashlib
 import pyAesCrypt
 import os
 import sqlite3
-pac = ""
-lo = ""
+import json
+
 
 #Decryption file
 def decrypt(lo, pa):
-    pac = pa.value
     pyAesCrypt.decryptFile(str(lo) + ".db.aes", str(lo) + ".db", pa.value)
     os.remove(str(lo) + ".db.aes")
 
@@ -107,6 +106,13 @@ def main(page: ft.Page):
         def btn_click(e):
             if get_log(password, login_txt.value) == True:
                 page.window_destroy()
+                data = {
+                    "login": login_txt.value,
+                    "password": password.value
+                }
+                # Запись данных в JSON файл
+                with open('credentials.json', 'w') as file:
+                    json.dump(data, file)
                 subprocess.run(["python", "main.py"])
                 page.remove(page)
             login_txt.value = ""

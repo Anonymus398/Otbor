@@ -1,19 +1,13 @@
 import flet as ft
 import sqlite3
-import sys
-import os
-import pyAesCrypt
+import json
 
-conn = sqlite3.connect('notes.db')
+with open('credentials.json', 'r') as file:
+    data = json.load(file)
+    login = data["login"]
+
+conn = sqlite3.connect(login + '.db')
 cursor = conn.cursor()
-
-cursor.execute('''
-    CREATE TABLE IF NOT EXISTS notes (
-        id INTEGER PRIMARY KEY,
-        title TEXT,
-        content TEXT
-    )
-''')
 
 class Task(ft.UserControl):
     def __init__(self, task_name, task_text, task_status_change, task_delete):

@@ -8,12 +8,12 @@ import sqlite3
 import json
 
 
-#Decryption file
+# Расшифровка файла
 def decrypt(lo, pa):
     pyAesCrypt.decryptFile(str(lo) + ".db.aes", str(lo) + ".db", pa.value)
     os.remove(str(lo) + ".db.aes")
 
-#Create new user, random salt
+# Создание нового пользователя с случайной солью
 def new_usr(pasword):
     salt = str(randint(100000, 999999))
     pas = str(pasword) + salt 
@@ -21,7 +21,7 @@ def new_usr(pasword):
     hesh = hashlib.sha512(pas_bytes)
     return hesh.hexdigest(), salt
 
-#Authoriz user
+# Авторизация пользователя
 def get_log(password, login):
     salt = ""
     Hash = ""
@@ -48,10 +48,12 @@ def main(page: ft.Page):
         page.window_width = 400  
         page.window_height = 400  
         page.window_resizable = False  
+        
         page.update()
 
-        #Registration button
+        # Обработчик кнопки "Регистрация"
         def reg_button(e):
+            b = False
             log = login_txt.value
             hashe, salt = new_usr(password.value)
             p = password.value
@@ -71,8 +73,11 @@ def main(page: ft.Page):
                 if notes != []:
                         for note in notes:
                             if note[1] == log:
-                                print("Юзер есть, ты еблан?")
-                            
+                                page.add(text)
+                                b = True
+                                return
+                        if b == True:
+                            page.remove(text)    
                         curs.execute('INSERT INTO users (user, hesh, salt) VALUES (?, ?, ?)', (str(log), str(hashe), str(salt)))
                         conn.commit()
                         page.remove(button3)
@@ -102,7 +107,7 @@ def main(page: ft.Page):
             os.remove(str(log) + ".db")
             page.update()
             
-        #Authorize button
+         # Обработчик кнопки "Войти"
         def btn_click(e):
             if get_log(password, login_txt.value) == True:
                 page.window_destroy()
@@ -120,7 +125,7 @@ def main(page: ft.Page):
             page.update()
             password.focus()
         
-        #Reg text button
+        # Обработчик кнопки "Регистрация"
         def on_text_button_click(e):
             page.remove(button1, button2)
             page.add(button3)
@@ -128,6 +133,7 @@ def main(page: ft.Page):
 
         button1 = ft.ElevatedButton("Войти", on_click=btn_click)
         button2 = ft.TextButton("Регистрация", on_click=on_text_button_click)
+        text = ft.Text("Такой пользователь уже существует")
         button3 = ft.ElevatedButton("Регистрация", on_click=reg_button)
         page.add(login_txt, 
                  password, 

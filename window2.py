@@ -7,7 +7,7 @@ import os
 import sqlite3
 import json
 
-
+ 
 # Расшифровка файла
 def decrypt(lo, pa):
     pyAesCrypt.decryptFile(str(lo) + ".db.aes", str(lo) + ".db", pa.value)
@@ -92,7 +92,7 @@ def main(page: ft.Page):
                     page.add(button1, button2)
                     login_txt.value = ""
                     password.value = ""    
-            
+            conn.close()
             with sqlite3.connect(str(log) + '.db') as conn:
                 curs = conn.cursor()
                 curs.execute('''

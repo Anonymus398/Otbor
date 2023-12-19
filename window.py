@@ -2,12 +2,13 @@ import flet as ft
 import sqlite3
 import json
 
-with open('credentials.json', 'r') as file:
+with open("credentials.json", "r") as file:
     data = json.load(file)
     login = data["login"]
 
-conn = sqlite3.connect(login + '.db')
+conn = sqlite3.connect(login + ".db")
 cursor = conn.cursor()
+
 
 class Task(ft.UserControl):
     def __init__(self, task_name, task_text, task_status_change, task_delete):
@@ -18,10 +19,11 @@ class Task(ft.UserControl):
         self.task_status_change = task_status_change
         self.task_delete = task_delete
 
-
     def build(self):
         self.display_task = ft.Checkbox(
-            value=False, label=self.task_name + " " + self.task_text, on_change=self.status_changed
+            value=False,
+            label=self.task_name + " " + self.task_text,
+            on_change=self.status_changed,
         )
         self.edit_name = ft.TextField(expand=1)
 
@@ -56,7 +58,7 @@ class Task(ft.UserControl):
                 ft.IconButton(
                     icon=ft.icons.DONE_OUTLINE_OUTLINED,
                     icon_color=ft.colors.GREEN,
-                    tooltip= "Обновить заметку",
+                    tooltip="Обновить заметку",
                     on_click=self.save_clicked,
                 ),
             ],
@@ -87,7 +89,9 @@ class TodoApp(ft.UserControl):
     def build(self):
 
         self.new_task = ft.TextField(
-            hint_text="Введите название заметки", on_submit=self.add_clicked, expand=True
+            hint_text="Введите название заметки",
+            on_submit=self.add_clicked,
+            expand=True,
         )
         self.new_task_text = ft.TextField(
             hint_text="Введите текст заметки", on_submit=self.add_clicked, expand=True
@@ -99,7 +103,11 @@ class TodoApp(ft.UserControl):
             scrollable=False,
             selected_index=0,
             on_change=self.tabs_changed,
-            tabs=[ft.Tab(text="Все"), ft.Tab(text="Активные"), ft.Tab(text="Выполненные")],
+            tabs=[
+                ft.Tab(text="Все"),
+                ft.Tab(text="Активные"),
+                ft.Tab(text="Выполненные"),
+            ],
         )
 
         self.items_left = ft.Text("0 активных")
@@ -143,9 +151,17 @@ class TodoApp(ft.UserControl):
     async def add_clicked(self, e):
 
         if self.new_task.value:
-            cursor.execute('INSERT INTO notes (title, content) VALUES (?, ?)', (self.new_task.value, self.new_task_text.value))
+            cursor.execute(
+                "INSERT INTO notes (title, content) VALUES (?, ?)",
+                (self.new_task.value, self.new_task_text.value),
+            )
             conn.commit()
-            task = Task(self.new_task.value, self.new_task_text.value, self.task_status_change, self.task_delete)
+            task = Task(
+                self.new_task.value,
+                self.new_task_text.value,
+                self.task_status_change,
+                self.task_delete,
+            )
             self.new_task.value = ""
             self.new_task_text.value = ""
             self.tasks.controls.append(task)
@@ -177,7 +193,7 @@ class TodoApp(ft.UserControl):
         conn.commit()
 
     def db_connection(self):
-        cursor.execute('SELECT * FROM notes')
+        cursor.execute("SELECT * FROM notes")
         notes = cursor.fetchall()
         for note in notes:
             task = Task(note[1], note[2], self.task_status_change, self.task_delete)
@@ -198,7 +214,8 @@ class TodoApp(ft.UserControl):
         self.items_left.value = f"{count} активных"
         await super().update_async()
 
-async def main(page: ft.Page): 
+
+async def main(page: ft.Page):
     page.title = "Заметки"
     page.horizontal_alignment = ft.CrossAxisAlignment.CENTER
     page.scroll = ft.ScrollMode.ADAPTIVE

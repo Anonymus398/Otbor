@@ -5,9 +5,7 @@ import os  # Импорт модуля os
 import sys  # Импорт модуля sys
 import json  # Импорт модуля json
 
-with open(
-    "credentials.json", "r"
-) as file:  # Открытие файла credentials.json в режиме чтения
+with open("credentials.json", "r") as file:  # Открытие файла credentials.json в режиме чтения
     data = json.load(file)  # Загрузка данных из файла в формате JSON
     login = data["login"]  # Извлечение логина из данных
     password = data["password"]  # Извлечение пароля из данных

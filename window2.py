@@ -131,9 +131,7 @@ def main(page: ft.Page):
 
     # Обработчик кнопки "Войти"
     def btn_click(e):
-        if (
-            get_log(password, login_txt.value) == True
-        ):  # Если авторизация прошла успешно
+        if (get_log(password, login_txt.value) == True):  # Если авторизация прошла успешно
             page.window_destroy()  # Закрытие окна
             data = {
                 "login": login_txt.value,  # Логин пользователя
